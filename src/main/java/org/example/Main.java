@@ -2,6 +2,7 @@ package org.example;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,8 +64,8 @@ public class Main {
     }
 
     private static boolean isGetter(Method method){
-        return method.getName().startsWith("get") && method.getParameterTypes().length == 0 &&
-                !void.class.equals(method.getReturnType());
+        return (method.getName().startsWith("get") || method.getName().startsWith("is")) &&
+                method.getParameterTypes().length == 0 && !void.class.equals(method.getReturnType());
     }
 
     public static List<String> checkAllConstantsNames(Object obj) {
@@ -73,7 +74,8 @@ public class Main {
         try {
             for (Field field : declaredFields) {
                 field.setAccessible(true);
-                if (field.getType().getName().equals("java.lang.String") && field.getName().equals(field.get(obj))) {
+                if (field.getType().getName().equals("java.lang.String") && Modifier.isStatic(field.getModifiers()) &&
+                        Modifier.isFinal(field.getModifiers()) && field.getName().equals(field.get(obj))) {
                     constantNamesThatAreEqual.add(field.get(obj).toString());
                 }
             }

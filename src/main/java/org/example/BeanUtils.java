@@ -29,41 +29,54 @@ public class BeanUtils {
         List<Method> allSetters = getAllSetters(to);
         System.out.println(allSetters);
         for (Method getter: allGetters) {
-            String getterReturnType = getter.getReturnType().getName();
             List<Method> list = allSetters.stream().filter(setterMethod -> {
                 Class<?> parameterType = setterMethod.getParameterTypes()[0];
-                String setterName = setterMethod.getName().replaceFirst("set", "");
-                String getterName = getter.getName().replaceFirst("get", "");
-                return parameterType.getName().equals(getterReturnType) && setterName.equals(getterName); // или суперклассу
+                return parameterType.isAssignableFrom(getter.getReturnType()) &&
+                        getSetterName(setterMethod).equals(getGetterName(getter)); // или суперклассу
             }).toList();
             if (list.isEmpty()) {
                 return;
             }
             try {
-//                getter.getReturnType();
                 Object invoke = getter.invoke(from);
                 Method setter = list.get(0);
                 setter.invoke(to, invoke);
             } catch (IllegalAccessException | InvocationTargetException ex) {
                 System.out.println("error while get/set");
             }
-
         }
-
     }
 
-
-    public static List<Method> getAllGetters(Object obj) {
+    private static List<Method> getAllGetters(Object obj) {
         Method[] methods = obj.getClass().getMethods();
-        return Arrays.stream(methods).filter(method -> method.getName().startsWith("get") &&
-                method.getParameterTypes().length == 0 && !void.class.equals(method.getReturnType()))
+        return Arrays.stream(methods).filter(method -> (method.getName().startsWith("get") ||
+                        method.getName().startsWith("is")) && method.getParameterTypes().length == 0 &&
+                        !void.class.equals(method.getReturnType()))
                 .collect(Collectors.toList());
     }
 
-    public static List<Method> getAllSetters(Object obj) {
+    private static List<Method> getAllSetters(Object obj) {
         Method[] methods = obj.getClass().getMethods();
         return Arrays.stream(methods).filter(method -> method.getName().startsWith("set") &&
                 method.getParameterTypes().length == 1).collect(Collectors.toList());
+    }
+
+    private static String getSetterName(Method setterMethod) {
+        String setterName = " ";
+        if (setterMethod.getName().startsWith("set")) {
+            setterName = setterMethod.getName().replaceFirst("set", "");
+        }
+        return setterName;
+    }
+
+    private static String getGetterName(Method getter) {
+        String getterName = "";
+        if (getter.getName().startsWith("get")) {
+            getterName = getter.getName().replaceFirst("get", "");
+        } else if (getter.getName().startsWith("is")) {
+            getterName = getter.getName().replaceFirst("is", "");
+        }
+        return getterName;
     }
 
 }

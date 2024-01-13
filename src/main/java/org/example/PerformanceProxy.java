@@ -2,8 +2,6 @@ package org.example;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 public class PerformanceProxy implements InvocationHandler {
 
@@ -18,7 +16,7 @@ public class PerformanceProxy implements InvocationHandler {
         if (method.isAnnotationPresent(org.example.Metric.class)) {
             long startTime = System.nanoTime();
             int result = (Integer) method.invoke(target, args);
-            System.out.println("Время работы метода: " + (System.nanoTime() - startTime) + " (в наносек)");
+            System.out.println("Method took: " + (System.nanoTime() - startTime) + " (nanosec)");
             return result;
         } else {
             return method.invoke(target, args);

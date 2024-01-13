@@ -1,11 +1,9 @@
 package org.example;
 
-import lombok.Getter;
-import lombok.Setter;
-
 public class CalculatorImpl implements Calculator {
 
     private int someVariable;
+    private boolean someBool;
     public static final String FRIDAY = "FRIDAY";
     public static final String SATURDAY = "SATURDAY";
     public static final String SUNDAY = "SUNDAY";
@@ -13,7 +11,6 @@ public class CalculatorImpl implements Calculator {
 
     @Override
     public int calc (int number) {
-//        Thread.sleep(1000);
         if (number <= 1) {
             return 1;
         }
@@ -24,7 +21,6 @@ public class CalculatorImpl implements Calculator {
 
     @Override
     public int calcWithoutAnnotation(int number) {
-//        Thread.sleep(1000);
         if (number <= 1) {
             return 1;
         }
@@ -39,5 +35,13 @@ public class CalculatorImpl implements Calculator {
 
     public void setSomeVariable(int someVariable) {
         this.someVariable = someVariable;
+    }
+
+    public boolean isSomeBool() {
+        return someBool;
+    }
+
+    public void setSomeBool(boolean someBool) {
+        this.someBool = someBool;
     }
 }
